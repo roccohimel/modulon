@@ -235,6 +235,10 @@ static I386ObjSymbol *i386_add_object_symbol(I386Gen *gen,
 static void i386_add_relocation(I386Gen *gen, uint16_t target_section, uint32_t offset, uint32_t type, const char *symbol, uint16_t section_symbol)
 {
 	I386Relocation *relocation;
+	//Direct calls may target builtins or implicitly declared external functions.
+	//Keep them as undefined function symbols for the final linker to resolve.
+	if(symbol && type == R_386_PC32)
+		i386_add_object_symbol(gen, symbol, NULL, true);
 	ARR_GROW(gen->relocations, gen->nrelocations, gen->caprelocations, I386Relocation);
 	relocation = &gen->relocations[gen->nrelocations++];
 	relocation->offset = offset;
@@ -1906,6 +1910,8 @@ static void i386_gen_function(I386Gen *gen, Decl *declaration)
 	i386_define_label(gen, gen->return_label);
 	i386_put8(&gen->text, 0xc9);
 	i386_put8(&gen->text, 0xc3);
+	//Generating calls/input may grow and relocate the symbol array.
+	symbol = i386_find_object_symbol(gen, declaration->name);
 	symbol->size = (uint32_t)gen->text.n - start;
 }
 static uint32_t i386_intern_string(I386Gen *gen, const char *value);

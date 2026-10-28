@@ -862,10 +862,14 @@ static void add_startup(AsmImage *array)
 	put_u32(buffer, 0);
 	put_u8(buffer, 0x89);
 	put_u8(buffer, 0xc7);
-	put_u8(buffer, 0xb8);
-	put_u32(buffer, 60);
+	//Use libc exit so buffered output and atexit handlers are flushed.
+	put_u8(buffer, 0xe8);
+	add_import(array, "exit", false);
+	add_fixup(array, FIX_REL32_SYMBOL, buffer->n, "exit", 0);
+	put_u32(buffer, 0);
+	//exit must not return.
 	put_u8(buffer, 0x0f);
-	put_u8(buffer, 0x05);
+	put_u8(buffer, 0x0b);
 }
 
 void internal_assemble(const char *assembly, AsmImage *array)
