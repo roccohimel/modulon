@@ -164,6 +164,7 @@ Tokens lex_source(const char *text, const char *file)
 			if(character == '"' || character == '\'') {
 				char cursor = character;
 				bool esc = false;
+				bool closed = false;
 				index++;
 				col++;
 				while(index < count) {
@@ -177,10 +178,12 @@ Tokens lex_source(const char *text, const char *file)
 						esc = false;
 					else if(value == '\\')
 						esc = true;
-					else if(value == cursor)
+					else if(value == cursor) {
+						closed = true;
 						break;
+					}
 				}
-				if(text[index - 1] != cursor) {
+				if(!closed) {
 					diagnostic_report(DIAG_ERROR, file, text, source_line, scan_code, "unterminated literal");
 					continue;
 				}
