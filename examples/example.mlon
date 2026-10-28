@@ -1,0 +1,22 @@
+include <stdio.h>
+
+define PASSING_SCORE 70
+
+int main()
+{
+	var name = input("Enter your name: ");
+	var score = 92;
+	var grade = "A";
+
+	printf("\nStudent: %v\n", name);
+	printf("Score: %v\n", score);
+	printf("Grade: %v\n", grade);
+
+	if(score >= PASSING_SCORE) {
+		printf("%v passed the test.\n", name);
+	}
+	if(typeof(name) == string && typeof(score) == int) {
+		printf("All variable types are correct.\n");
+	}
+	return 0;
+}

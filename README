@@ -1,1 +1,92 @@
 Modulon Language
+================
+
+Modulon is a C-derived programming language that aims to
+preserve the power and familiarity of C while simplifying common
+programming tasks.
+
+OVERVIEW
+--------
+
+Modulon combines C-style syntax with convenient language features,
+including inferred variable types, automatic string sizing, pattern
+matching, and optional just-in-time compilation.
+
+FEATURES
+--------
+
+* C-derived syntax with support for familiar C types.
+* Variable declarations using the "var" keyword and type inference.
+* "include" and "define" directives instead of C preprocessor syntax.
+* Automatic string sizing and byte counting.
+* Automatic memory management at compile time, without a garbage
+  collector, alongside options for manual memory management.
+* Pattern matching with ranges and a wildcard case.
+* Logical AND (&&) and OR (||) operators.
+* "typeof" for examining types.
+* "input" for prompted user input.
+* Formatted output, including automatic type formatting with %v.
+* Ahead-of-time (AOT) and just-in-time (JIT) compilation.
+* Built-in assembler support.
+* Consistent language types across supported target environments.
+
+SOURCE FILES
+------------
+
+Modulon source files use the .mlon extension.
+
+EXAMPLE
+-------
+
+The following illustrates the intended syntax:
+
+    var message = "Hello from Modulon!";
+    printf("%v\n", message);
+
+The exact commands needed to build and run this example depend on the
+compiler version and local build configuration.
+
+BUILDING
+--------
+
+Obtain the Modulon source code from the project's official repository.
+Consult the build scripts and documentation included with that revision
+for compiler requirements, build commands, and supported platforms.
+
+COMPILATION
+-----------
+
+Modulon supports ahead-of-time compilation and a JIT mode. The JIT mode
+can be selected with the --jit option in compiler versions that provide
+it. Check your compiler's help output for the complete command syntax.
+
+PROJECT GOALS
+-------------
+
+* Keep low-level programming practical and accessible.
+* Reduce repetitive declarations and manual bookkeeping.
+* Preserve explicit control when programmers need it.
+* Provide useful diagnostics and predictable compilation behavior.
+* Develop an approachable, capable alternative within the C family.
+
+CONTRIBUTING
+------------
+
+Bug reports, reproducible test cases, documentation improvements, and
+source code contributions are welcome. Before submitting changes,
+review the contribution instructions in the project repository, if
+available. Include a clear description of the problem and your fix.
+
+LICENSE
+-------
+
+See the LICENSE file distributed with the source code for the applicable
+license terms. Do not assume a license from this README alone.
+
+PROJECT
+-------
+
+Modulon Software Foundation (MSF)
+Website: https://modulonsoftware.org
+
+Copyright (c) 2026 Modulon Software Foundation.
