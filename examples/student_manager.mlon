@@ -18,7 +18,6 @@ struct Student {
 
 //Student database and ID counter
 struct Student students[MAX_STUDENTS];
-
 int student_count = 0;
 int next_id = 1;
 
@@ -33,19 +32,17 @@ void print_header() {
 	print_line();
 	printf("       MODULON STUDENT MANAGER\n");
 	print_line();
-	printf("Students: %d / %d\n",
-	       student_count, MAX_STUDENTS);
+	printf("Students: %d / %d\n", student_count, MAX_STUDENTS);
 	print_line();
 }
 
-//Finds a student by ID and returns their array index
+//Finds a student by ID and returns its array index
 int find_student(int id) {
 	for (var i = 0; i < student_count; i++) {
 		if (students[i].id == id) {
 			return i;
 		}
 	}
-
 	return -1;
 }
 
@@ -54,33 +51,19 @@ float calculate_average(int index) {
 	if (students[index].grade_count == 0) {
 		return 0.0;
 	}
-
 	var total = 0;
-
-	for (var i = 0;
-	     i < students[index].grade_count;
-	     i++) {
+	for (var i = 0; i < students[index].grade_count; i++) {
 		total += students[index].grades[i];
 	}
-
-	return (float)total /
-	       students[index].grade_count;
+	return (float)total / students[index].grade_count;
 }
 
 //Converts a numerical average into a letter grade
 char get_letter_grade(float average) {
-	if (average >= 90)
-		return 'A';
-
-	if (average >= 80)
-		return 'B';
-
-	if (average >= 70)
-		return 'C';
-
-	if (average >= 60)
-		return 'D';
-
+	if (average >= 90) return 'A';
+	if (average >= 80) return 'B';
+	if (average >= 70) return 'C';
+	if (average >= 60) return 'D';
 	return 'F';
 }
 
@@ -90,57 +73,42 @@ void add_student() {
 		printf("Student database is full.\n");
 		return;
 	}
-
 	var index = student_count;
-
 	printf("\nADD STUDENT\n");
 	print_line();
 
-	//Read the student's information
+	//Copy the name before another input call can reuse its buffer
 	var name = input("Student name: ");
+	strncpy(students[index].name, name, 63);
+	students[index].name[63] = '\0';
 	var age = input("Student age: ");
 
-	//Initialize the student record
+	//Initialize the remaining student information
 	students[index].id = next_id;
-	strcpy(students[index].name, name);
 	students[index].age = atoi(age);
 	students[index].grade_count = 0;
-
-	//Update database counters
 	student_count++;
 	next_id++;
-
 	printf("\nStudent successfully added.\n");
-	printf("Assigned ID: %d\n",
-	       students[index].id);
+	printf("Assigned ID: %d\n", students[index].id);
 }
 
 //Displays all registered students
 void list_students() {
 	printf("\nSTUDENT DIRECTORY\n");
 	print_line();
-
 	if (student_count == 0) {
 		printf("No students registered.\n");
 		return;
 	}
-
-	printf("%-5s %-20s %-5s %-8s\n",
-	       "ID", "NAME", "AGE", "AVERAGE");
-
+	printf("%-5s %-20s %-5s %-8s\n", "ID", "NAME", "AGE", "AVERAGE");
 	print_line();
-
-	//Print each student's information
 	for (var i = 0; i < student_count; i++) {
 		var average = calculate_average(i);
-
 		printf("%-5d %-20s %-5d %6.2f\n",
-		       students[i].id,
-		       students[i].name,
-		       students[i].age,
-		       average);
+		       students[i].id, students[i].name,
+		       students[i].age, average);
 	}
-
 	print_line();
 	printf("Total: %d students\n", student_count);
 }
@@ -149,81 +117,54 @@ void list_students() {
 void add_grade() {
 	printf("\nADD GRADE\n");
 	print_line();
-
 	var id = atoi(input("Student ID: "));
 	var index = find_student(id);
-
 	if (index == -1) {
 		printf("Student not found.\n");
 		return;
 	}
-
-	//Prevent exceeding the grade array capacity
 	if (students[index].grade_count >= MAX_GRADES) {
 		printf("Maximum grades reached.\n");
 		return;
 	}
-
 	printf("Student: %s\n", students[index].name);
-
 	var grade = atoi(input("Grade (0-100): "));
-
-	//Reject grades outside the valid range
 	if (grade < 0 || grade > 100) {
 		printf("Invalid grade.\n");
 		return;
 	}
-
 	var position = students[index].grade_count;
-
 	students[index].grades[position] = grade;
 	students[index].grade_count++;
-
 	printf("Grade added successfully.\n");
-	printf("New average: %.2f\n",
-	       calculate_average(index));
+	printf("New average: %.2f\n", calculate_average(index));
 }
 
 //Displays detailed information about one student
 void show_student() {
 	printf("\nSTUDENT INFORMATION\n");
 	print_line();
-
 	var id = atoi(input("Student ID: "));
 	var index = find_student(id);
-
 	if (index == -1) {
 		printf("Student not found.\n");
 		return;
 	}
-
 	var average = calculate_average(index);
-
 	printf("ID:      %d\n", students[index].id);
 	printf("Name:    %s\n", students[index].name);
 	printf("Age:     %d\n", students[index].age);
-	printf("Grades:  %d\n",
-	       students[index].grade_count);
-
+	printf("Grades:  %d\n", students[index].grade_count);
 	print_line();
-
-	//List all recorded grades
-	for (var i = 0;
-	     i < students[index].grade_count;
-	     i++) {
-		printf("Grade %d: %d\n",
-		       i + 1,
-		       students[index].grades[i]);
+	for (var i = 0; i < students[index].grade_count; i++) {
+		printf("Grade %d: %d\n", i + 1, students[index].grades[i]);
 	}
-
 	print_line();
-
 	printf("Average: %.2f\n", average);
-	printf("Letter:  %c\n",
-	       get_letter_grade(average));
-
-	//Determine whether the student is passing
-	if (average >= PASSING_GRADE) {
+	printf("Letter:  %c\n", get_letter_grade(average));
+	if (students[index].grade_count == 0) {
+		printf("Status:  NO GRADES\n");
+	} else if (average >= PASSING_GRADE) {
 		printf("Status:  PASSING\n");
 	} else {
 		printf("Status:  FAILING\n");
@@ -234,25 +175,17 @@ void show_student() {
 void remove_student() {
 	printf("\nREMOVE STUDENT\n");
 	print_line();
-
 	var id = atoi(input("Student ID: "));
 	var index = find_student(id);
-
 	if (index == -1) {
 		printf("Student not found.\n");
 		return;
 	}
-
-	printf("Removing: %s\n",
-	       students[index].name);
-
-	//Shift remaining records to fill the gap
+	printf("Removing: %s\n", students[index].name);
 	for (var i = index; i < student_count - 1; i++) {
 		students[i] = students[i + 1];
 	}
-
 	student_count--;
-
 	printf("Student removed successfully.\n");
 }
 
@@ -260,20 +193,14 @@ void remove_student() {
 void search_students() {
 	printf("\nSEARCH STUDENTS\n");
 	print_line();
-
 	var query = input("Search name: ");
 	var found = 0;
-
 	for (var i = 0; i < student_count; i++) {
 		if (strstr(students[i].name, query) != NULL) {
-			printf("[%d] %s\n",
-			       students[i].id,
-			       students[i].name);
-
+			printf("[%d] %s\n", students[i].id, students[i].name);
 			found++;
 		}
 	}
-
 	if (found == 0) {
 		printf("No matching students.\n");
 	} else {
@@ -284,21 +211,14 @@ void search_students() {
 //Sorts students alphabetically using bubble sort
 void sort_students() {
 	for (var i = 0; i < student_count - 1; i++) {
-		for (var j = 0;
-		     j < student_count - i - 1;
-		     j++) {
-			if (strcmp(students[j].name,
-			           students[j + 1].name) > 0) {
-
-				//Swap adjacent student records
+		for (var j = 0; j < student_count - i - 1; j++) {
+			if (strcmp(students[j].name, students[j + 1].name) > 0) {
 				var temp = students[j];
-
 				students[j] = students[j + 1];
 				students[j + 1] = temp;
 			}
 		}
 	}
-
 	printf("Students sorted alphabetically.\n");
 }
 
@@ -306,57 +226,38 @@ void sort_students() {
 void show_statistics() {
 	printf("\nDATABASE STATISTICS\n");
 	print_line();
-
 	if (student_count == 0) {
 		printf("No statistics available.\n");
 		return;
 	}
-
 	var total_average = 0.0;
 	var highest = 0.0;
 	var lowest = 101.0;
 	var passing = 0;
 	var failing = 0;
 	var graded = 0;
-
-	//Process students who have recorded grades
 	for (var i = 0; i < student_count; i++) {
 		if (students[i].grade_count == 0) {
 			continue;
 		}
-
 		var average = calculate_average(i);
-
 		total_average += average;
 		graded++;
-
-		//Track the highest and lowest averages
-		if (average > highest) {
-			highest = average;
-		}
-
-		if (average < lowest) {
-			lowest = average;
-		}
-
-		//Count passing and failing students
+		if (average > highest) highest = average;
+		if (average < lowest) lowest = average;
 		if (average >= PASSING_GRADE) {
 			passing++;
 		} else {
 			failing++;
 		}
 	}
-
 	printf("Total students: %d\n", student_count);
 	printf("Graded students: %d\n", graded);
-
 	if (graded == 0) {
 		printf("No grades recorded.\n");
 		return;
 	}
-
-	printf("Class average:   %.2f\n",
-	       total_average / graded);
+	printf("Class average:   %.2f\n", total_average / graded);
 	printf("Highest average: %.2f\n", highest);
 	printf("Lowest average:  %.2f\n", lowest);
 	printf("Passing: %d\n", passing);
@@ -367,7 +268,6 @@ void show_statistics() {
 void print_menu() {
 	printf("\nMAIN MENU\n");
 	print_line();
-
 	printf("1. Add student\n");
 	printf("2. List students\n");
 	printf("3. Add grade\n");
@@ -377,66 +277,41 @@ void print_menu() {
 	printf("7. Sort students\n");
 	printf("8. Statistics\n");
 	printf("0. Exit\n");
-
 	print_line();
 }
 
 //Program entry point
 int main() {
+	//Initialize globals explicitly for JIT execution
+	student_count = 0;
+	next_id = 1;
 	var running = 1;
-
 	print_header();
-
-	//Continue processing commands until the user exits
 	while (running) {
 		print_menu();
-
 		var choice = atoi(input("Selection: "));
-
-		//Dispatch the selected menu operation
-		match (choice) {
-			1 => {
-				add_student();
-			}
-
-			2 => {
-				list_students();
-			}
-
-			3 => {
-				add_grade();
-			}
-
-			4 => {
-				show_student();
-			}
-
-			5 => {
-				remove_student();
-			}
-
-			6 => {
-				search_students();
-			}
-
-			7 => {
-				sort_students();
-			}
-
-			8 => {
-				show_statistics();
-			}
-
-			0 => {
-				printf("Goodbye!\n");
-				running = 0;
-			}
-
-			_ => {
-				printf("Invalid selection.\n");
-			}
+		if (choice == 1) {
+			add_student();
+		} else if (choice == 2) {
+			list_students();
+		} else if (choice == 3) {
+			add_grade();
+		} else if (choice == 4) {
+			show_student();
+		} else if (choice == 5) {
+			remove_student();
+		} else if (choice == 6) {
+			search_students();
+		} else if (choice == 7) {
+			sort_students();
+		} else if (choice == 8) {
+			show_statistics();
+		} else if (choice == 0) {
+			printf("Goodbye!\n");
+			running = 0;
+		} else {
+			printf("Invalid selection.\n");
 		}
 	}
-
 	return 0;
 }
