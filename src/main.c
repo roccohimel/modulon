@@ -23,7 +23,8 @@ int main(int argc, char **argv)
 	char **src = NULL;
 	char **libs = NULL;
 	size_t nsrc = 0, csrc = 0, nlibs = 0, clibs = 0, index;
-	char *out = xstrdup("a.out");
+	char *out = NULL;
+	bool output_set = false;
 	bool assembly_only = false;
 	bool compile_only = false;
 	bool target_i386 = false;
@@ -43,6 +44,7 @@ int main(int argc, char **argv)
 			if(++index >= (size_t)argc)
 				fatal("-o needs a file");
 			out = argv[index];
+			output_set = true;
 		} else if(!strcmp(argv[index], "-S"))
 		{
 			assembly_only = true;
@@ -64,15 +66,18 @@ int main(int argc, char **argv)
 			  !strcmp(argv[index], "-fno-pic") ||
 			  !strcmp(argv[index], "-nostdlib") ||
 			  !strcmp(argv[index], "-nostdinc") ||
-			  !strcmp(argv[index], "-Wall") ||
+			  !strcmp(argv[index], "-ffreestanding") ||
+			  !strncmp(argv[index], "-std=", 5))
+		{
+			/* Compatibility-only flags; they do not change code generation. */
+		} else if(!strcmp(argv[index], "-Wall") ||
 			  !strcmp(argv[index], "-Wextra") ||
 			  !strcmp(argv[index], "-Wpedantic") ||
 			  !strncmp(argv[index], "-O", 2) ||
-			  !strncmp(argv[index], "-std=", 5) ||
 			  !strncmp(argv[index], "-I", 2) ||
 			  !strncmp(argv[index], "-D", 2))
 		{
-			//Accepted compatibility flags; AneoC is always freestanding in -m32 -c mode.
+			fatal("option %s is not implemented; remove it or use a supported option", argv[index]);
 		} else if(!strncmp(argv[index], "-l", 2))
 		{
 			ARR_GROW(libs, nlibs, clibs, char *);
@@ -89,14 +94,12 @@ int main(int argc, char **argv)
 	}
 	if(!nsrc)
 		fatal("no input files");
-	if(!assembly_only && strlen(out) >= 2 &&
-	   !strcmp(out + strlen(out) - 2, ".o"))
-	{
-		compile_only = true;
-		target_i386 = true;
-	}
-	if(compile_only)
-		target_i386 = true;
+	if(!output_set)
+		out = xstrdup(assembly_only ? "a.s" : compile_only ? "a.o" : "a.out");
+	if(compile_only && !target_i386)
+		fatal("-c currently requires -m32 because only i386 relocatable objects are supported");
+	if(target_i386 && !compile_only)
+		fatal("-m32 currently requires -c");
 	type_set_target(target_i386 ? TARGET_I386 : TARGET_POSIX);
 	for(index = 0; index < nsrc; index++) {
 		char *raw = read_file(src[index]);
@@ -131,8 +134,6 @@ int main(int argc, char **argv)
 		write_i386_relocatable(out, &prog);
 		return 0;
 	}
-	if(target_i386)
-		fatal("-m32 currently requires -c");
 	{
 		char *assembly = generate(&prog);
 		if(assembly_only) {
