@@ -1,0 +1,28 @@
+32-bit i386 Relocatable Objects
+===============================
+
+The 32-bit backend emits an ELF32 **relocatable object**, suitable for
+linking into a larger system by an appropriate linker. It is particularly
+relevant to kernels and freestanding environments.
+
+::
+
+   ./bin/mlonc -m32 -c kernel.mlon -o kernel.o
+
+``-m32`` without ``-c`` is rejected. ``-c`` also selects the 32-bit
+backend, and an output name ending in ``.o`` can automatically select it.
+The compiler does not currently provide a complete 32-bit executable
+linker path.
+
+Unlike the native x86-64 output, the 32-bit backend has its own lowering
+and supports a somewhat different subset of syntax. The existing source
+reports that ``match`` statements are not supported in ``-m32`` mode.
+Conversely, C ``switch`` has special support in the i386 backend that is
+not present in the x86-64 native code generator.
+
+The ``-ffreestanding`` flag is accepted, but do not interpret that as a
+complete freestanding C runtime, standard headers, or an operating-system
+ABI. Your linker script, entrypoint, runtime calls and environment remain
+your responsibility.
+
+See `Data layout <../types/portability.rst>`__ for 32-bit type sizes.
