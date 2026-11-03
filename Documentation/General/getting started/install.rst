@@ -30,7 +30,7 @@ For a clean rebuild::
 To install to your system::
    
    ./configure --prefix="/usr"
-   sudo rm -rfv /usr/bin/mlon
+   sudo rm -rfv /usr/bin/mlonc
    sudo make install
 
 So a full Modulon installation would be::
