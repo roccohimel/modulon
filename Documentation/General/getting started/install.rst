@@ -38,7 +38,7 @@ So a full Modulon installation would be::
    make clean
    make -j$(nproc)
    ./configure --prefix="/usr"
-   sudo rm -rfv /usr/bin/mlon
+   sudo rm -rfv /usr/bin/mlonc
    sudo make install 
    sync 
 
