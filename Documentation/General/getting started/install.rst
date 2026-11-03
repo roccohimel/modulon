@@ -27,6 +27,21 @@ For a clean rebuild::
    make clean
    make -j2
 
+To install to your system::
+   
+   ./configure --prefix="/usr"
+   sudo rm -rfv /usr/bin/mlon
+   sudo make install
+
+So a full Modulon installation would be::
+   
+   make clean
+   make -j$(nproc)
+   ./configure --prefix="/usr"
+   sudo rm -rfv /usr/bin/mlon
+   sudo make install 
+   sync 
+
 ``make`` compiles every ``src/*.c`` file into ``build/*.o`` and links the
 compiler at ``bin/mlonc``. The ``make clean`` target removes those output
 files. The Makefile defines no ``install`` target, so installing into a

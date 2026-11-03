@@ -1,11 +1,18 @@
 CC ?= cc
 CFLAGS ?= -std=c11 -Wall -Wextra -Wno-unused-parameter
 
+# configure writes config.mk; defaults allow building without configure.
+prefix = /usr/local
+exec_prefix = $(prefix)
+bindir = $(exec_prefix)/bin
+-include config.mk
+
+INSTALL ?= install
 SOURCES := $(wildcard src/*.c)
 OBJECTS := $(patsubst src/%.c,build/%.o,$(SOURCES))
 DEPS := $(OBJECTS:.o=.d)
 
-.PHONY: all clean
+.PHONY: all clean install uninstall
 
 all: bin/mlonc
 
@@ -17,6 +24,13 @@ build/%.o: src/%.c | build
 
 build bin:
 	mkdir -p $@
+
+install: all
+	$(INSTALL) -d "$(DESTDIR)$(bindir)"
+	$(INSTALL) -m 755 bin/mlonc "$(DESTDIR)$(bindir)/mlonc"
+
+uninstall:
+	$(RM) "$(DESTDIR)$(bindir)/mlonc"
 
 clean:
 	$(RM) -r build
